@@ -63,28 +63,30 @@ public class EchoServer extends AbstractServer
           e.printStackTrace();
         }
         return;
-      }
+      };
+    }
+    System.out.println("Message received: " + message + " from " + client.getInfo("loginID"));
+    if(client.getInfo("loginID")==null){
       loginID = parts[1];
-      System.out.println(message);
       client.setInfo("loginID", loginID);
+      System.out.println(loginID + " has logged in.");
+      this.sendToAllClients(loginID + " has logged in.");
       return;
     }
-    System.out.println("Message received: " + msg + " from " + client.getInfo("loginID"));
-    this.sendToAllClients(client.getInfo("loginID") + ":" + msg);
+    this.sendToAllClients(client.getInfo("loginID") + ">" + msg);
   }
 
   /** 
    * this method prints a message when a new client connects.
    */
   protected void clientConnected(ConnectionToClient client) {
-    System.out.println("New client connected: " + client);
+    System.out.println("A new client has connected to the server");
   }
   /** 
    * this method prints a message when a client disconnects.
    */
   protected void clientDisconnected(ConnectionToClient client) {
-    super.clientDisconnected(client);
-    System.out.println("Client disconnected: " + client);
+    System.out.println(client.getInfo("loginID") + " has disconnected.");
   }
   /**
    * This method overrides the one in the superclass.  Called
@@ -194,24 +196,19 @@ public class EchoServer extends AbstractServer
       }
 
     if(command.equals("close")){
-      try {
-        if(!this.isListening()){
-          System.out.println(">Server is not currently listening for connections.");
-          return;
-        }
-        } catch (Exception e) {
-          System.out.println(">Error checking server status: " + e.getMessage());
+        if(!this.isListening() && getNumberOfClients()==0){
+          System.out.println(">Server is not currently listening for connections and has no connected clients.");
           return;
         }
         try{
           close();
+          System.out.println(">Server has stopped listening for connections and disconnected every client.");
         }
         catch(IOException e){
           System.out.println(">Error closing the server: " + e.getMessage());
           return;
         }
-        System.out.println(">Server has stopped listening for connections and disconnected every client.");
-      }
+    }
       
     if(command.equals("setport")){
       if(this.isListening()){

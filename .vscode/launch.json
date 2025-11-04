@@ -10,7 +10,7 @@
             "request": "launch",
             "mainClass": "edu.seg2105.client.ui.ClientConsole",
             "projectName": "final_cc81f041",
-            "args": "localhost 5555 testUser",
+            "args": "user localhost 1234",
             "console": "integratedTerminal"
         },
         {
@@ -18,14 +18,8 @@
             "name": "EchoServer",
             "request": "launch",
             "mainClass": "edu.seg2105.edu.server.backend.EchoServer",
-            "projectName": "final_cc81f041"
-        },
-        {
-            "type": "java",
-            "name": "Current File",
-            "request": "launch",
-            "mainClass": "${file}",
-            "args": "localhost 5555 testUser"
+            "projectName": "final_cc81f041",
+            "args": "1234",
         }
     ]
 }

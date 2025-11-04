@@ -28,6 +28,11 @@ public class ChatClient extends AbstractClient
    */
   ChatIF clientUI; 
 
+  /**
+   * The login ID of the client.
+   */
+  private String loginID;
+
   
   //Constructors ****************************************************
   
@@ -39,11 +44,12 @@ public class ChatClient extends AbstractClient
    * @param clientUI The interface type variable.
    */
   
-  public ChatClient(String host, int port, ChatIF clientUI) 
+  public ChatClient(String host, int port, ChatIF clientUI,String loginID) 
     throws IOException 
   {
     super(host, port); //Call the superclass constructor
     this.clientUI = clientUI;
+    this.loginID = loginID;
     openConnection();
   }
 
@@ -57,7 +63,7 @@ public class ChatClient extends AbstractClient
    */
   public void handleMessageFromServer(Object msg) 
   {
-    System.out.println(msg.toString());
+    System.out.println(">" + msg.toString());
     
   }
 
@@ -75,7 +81,7 @@ public class ChatClient extends AbstractClient
       return;
     }
     else{
-      sendToServer("> " + message);
+      sendToServer(message);
     }
   }
     catch(IOException e)
@@ -98,16 +104,41 @@ public class ChatClient extends AbstractClient
     catch(IOException e) {}
     System.exit(0);
   }
-protected void connectionException(Exception exception) {
-    clientUI.display("Connection to server lost. Terminating client.");
-    quit();
-  }
+  /**
+    * This method handles connection exceptions.
+    *
+    * @param exception The exception raised.
+    */
+
+  protected void connectionException(Exception exception) {
+      clientUI.display("Connection to server lost. Terminating client.");
+      quit();
+    }
 
 
-
+    /**
+   * This method handles the event of a closed connection.
+   */
   protected void connectionClosed() {
     clientUI.display("Connection closed by server.");
   }
+
+
+
+  /**
+   * This method handles the event of a stablished connection.
+   */
+  protected void connectionEstablished() {
+    clientUI.display("Connection established with server.");
+    try {
+      sendToServer("#login " + this.loginID);
+    } catch (IOException e) {
+      clientUI.display("Error sending login ID to server: " + e.getMessage());
+    }
+  }
+
+
+
   /**
    * This method handles any commands received from the client.
    *
@@ -160,6 +191,16 @@ protected void connectionException(Exception exception) {
       int currentPort = this.getPort();
       clientUI.display("Current port: " + currentPort);
     }
+  }
+
+
+  /**
+   * This method returns the login ID of the client.
+   *
+   * @return The login ID.
+   */
+  public String getLoginID(){
+    return this.loginID;
   }
 }
 //End of ChatClient class

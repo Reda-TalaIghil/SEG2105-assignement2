@@ -51,15 +51,33 @@ public class EchoServer extends AbstractServer
   public void handleMessageFromClient
     (Object msg, ConnectionToClient client)
   {
-    System.out.println("Message received: " + msg + " from " + client);
-    this.sendToAllClients(msg);
+    String message = (String) msg;
+    String[] parts = message.split(" ");
+    String loginID;
+    if(parts[0].equals("#login")){
+      if(client.getInfo("loginID")!=null){
+        System.out.println("Client attempted to login again: " + client);
+        try{
+          client.close();
+        }catch(IOException e){
+          e.printStackTrace();
+        }
+        return;
+      }
+      loginID = parts[1];
+      System.out.println(message);
+      client.setInfo("loginID", loginID);
+      return;
+    }
+    System.out.println("Message received: " + msg + " from " + client.getInfo("loginID"));
+    this.sendToAllClients(client.getInfo("loginID") + ":" + msg);
   }
 
   /** 
    * this method prints a message when a new client connects.
    */
   protected void clientConnected(ConnectionToClient client) {
-    System.out.println("Client connected: " + client);
+    System.out.println("New client connected: " + client);
   }
   /** 
    * this method prints a message when a client disconnects.
